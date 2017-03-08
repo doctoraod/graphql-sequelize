@@ -115,7 +115,7 @@ let schema = new GraphQLSchema({
           },
           // An arg with the key order will automatically be converted to a order on the target
           order: {
-            type: GraphQLString
+            type: new GraphQLList(new GraphQLList(GraphQLString))
           }
         },
         resolve: resolver(User)
@@ -377,11 +377,26 @@ defaultArgs(Model);
   limit: {
     type: GraphQLInt
   },
+  offset: {
+    type: GraphQLInt
+  },
   order: {
-    type: GraphQLString
+    type: new GraphQLList(new GraphQLList(GraphQLString))
   },
   where: {
     type: JSONType
+  }
+}
+```
+
+Example Query
+
+```
+query {
+  users (limit:20, offset: 5, order:[["firstname","DESC"],"createdAt"], where: { firstname: "John" }) {
+    id
+    firstname
+    createAt
   }
 }
 ```
