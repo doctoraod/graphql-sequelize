@@ -6,6 +6,7 @@ import {
    GraphQLEnumType,
    GraphQLList
  } from 'graphql';
+import GraphQLDate from 'graphql-date'
 
 let customTypeMapper;
 /**
@@ -71,12 +72,15 @@ export function toGraphQL(sequelizeType, sequelizeTypes) {
       sequelizeType instanceof STRING ||
       sequelizeType instanceof TEXT ||
       sequelizeType instanceof UUID ||
-      sequelizeType instanceof DATE ||
       sequelizeType instanceof DATEONLY ||
       sequelizeType instanceof TIME ||
       sequelizeType instanceof BIGINT ||
       sequelizeType instanceof DECIMAL) {
     return GraphQLString;
+  }
+
+  if (sequelizeType instanceof DATE) {
+    return GraphQLDate;
   }
 
   if (sequelizeType instanceof ARRAY) {
