@@ -126,6 +126,137 @@ let schema = new GraphQLSchema({
 });
 ```
 
+## Example for Raw Query
+
+Function resloverQuery(sequelize, sql, options()) or resloverQuery(sequelize, sql, replacements)
+```
+import {resolverQuery} from 'graphql-sequelize';
+
+let User = sequelize.define('user', {
+  name: Sequelize.STRING
+});
+
+let Task = sequelize.define('task', {
+  title: Sequelize.STRING
+});
+
+User.Tasks = User.hasMany(Task, {as: 'tasks'});
+
+let taskType = new GraphQLObjectType({
+  name: 'Task',
+  description: 'A task',
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The id of the task.',
+    },
+    title: {
+      type: GraphQLString,
+      description: 'The title of the task.',
+    }
+  }
+});
+
+let userType = new GraphQLObjectType({
+  name: 'User',
+  description: 'A user',
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The id of the user.',
+    },
+    name: {
+      type: GraphQLString,
+      description: 'The name of the user.',
+    },
+    tasks: {
+      type: new GraphQLList(taskType),
+      resolve: resolverQuery(sequelize, 'SELECT * FROM task WHERE id = :id', { id: 20 })
+    }
+  }
+});
+
+let schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'RootQueryType',
+    fields: {
+      user: {
+        type: userType,
+        args: {
+          id: {
+            description: 'id of the user',
+            type: new GraphQLNonNull(GraphQLInt)
+          }
+        },
+        resolve: resolverQuery(sequelize, 'SELECT id, name, tasks FROM user WHERE id = :id', { id: 20 })
+      }
+    }
+  })
+});
+
+let schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'RootQueryType',
+    fields: {
+      users: {
+        // The resolver will use `findOne` or `findAll` depending on whether the field it's used in is a `GraphQLList` or not.
+        type: new GraphQLList(userType),
+        args: {
+          // An arg with the key limit will automatically be converted to a limit on the target
+          limit: {
+            type: GraphQLInt
+          },
+          // An arg with the key order will automatically be converted to a order on the target
+          order: {
+            type: new GraphQLList(new GraphQLList(GraphQLString))
+          }
+        },
+        resolve: resolverQuery(sequelize, 'SELECT id, name, tasks FROM user', {})
+      }
+    }
+  })
+});
+```
+Example
+Input
+```
+query {
+  user(limit: 20, offset: 5, where: { name: 'John' }, order: [['name','DESC']]) {
+    id
+    name
+  }
+}
+```
+Code
+```
+resolverQuery(sequelize, 'SELECT id, name, tasks FROM user', {});
+```
+Output
+```
+SELECT * FROM (SELECT id, name, tasks FROM user) subquery WHERE `name` = 'John' LIMIT 5, 20 ORDER BY `name` DESC
+```
+
+Example resloverQuery() use nested query
+Input
+```
+query {
+  todo {
+    id
+    name
+    userId
+    user(limit: 20, offset: 5, where: { name: 'John' }, order: [['name','DESC']]) {
+      id
+      name
+    }
+  }
+}
+```
+```
+resolverQuery(sequelize, 'SELECT id, name, tasks FROM user WHERE id = :id', (source, args, context, info) => {
+  source.replacements = { id: info.source.userId }
+  return source;
+});
+```
 ## field helpers
 
 field helpers help you automatically define a models attributes as fields for a GraphQL object type.
