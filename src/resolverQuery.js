@@ -37,7 +37,7 @@ function resolverFactory(model, sql, options) {
   resolverQuery = function (source, args, context, info) {
     var targetAttribute = [];
     Object.keys(args).forEach(function (key) {
-      if (key !== 'limit' && key !== 'order' && key !== 'replacements' && key !== 'where') {
+      if (key !== 'limit' && key !== 'offset' && key !== 'order' && key !== 'replacements' && key !== 'where') {
         targetAttribute.push(key);
       }
     });
