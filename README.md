@@ -20,6 +20,7 @@ graphql-sequelize assumes you have graphql and sequelize installed.
 
 A helper for resolving graphql queries targeted at Sequelize models or associations.
 Please take a look at [the tests](https://github.com/mickhansen/graphql-sequelize/blob/master/test/integration/resolver.test.js) to best get an idea of implementation.
+*** Resolver helpers is limit query 2000 row. If you want more. Recommend use query 2 time, Example (limit: 2000,offset: 0) and (limit: 2000,offset: 1)
 
 ### Features
 
@@ -400,6 +401,7 @@ query {
   }
 }
 ```
+
 
 Which when added to args will let the resolver automatically support limit and ordering in args for graphql queries.
 Should be used with fields of type `GraphQLList`.
