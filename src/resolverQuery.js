@@ -2,7 +2,7 @@ import argsToFindOptions from './argsToFindOptions';
 import {isConnection, nodeType} from './relay';
 import Promise from 'bluebird';
 
-function resolverFactory(model, sql, options) {
+function resolverFactory(model, sql, options, mappingModel) {
   var resolverQuery;
   const queryGenerator = model.getQueryInterface().QueryGenerator;
   var reslove = function reslove(findOptions) {
@@ -31,6 +31,7 @@ function resolverFactory(model, sql, options) {
       replacements: findOptions.replacements,
       type: model.QueryTypes.SELECT
     };
+    options = Object.assign({}, options, mappingModel ? { model: mappingModel } : {});
     return model.query(query, options);
   };
   options = options || {};

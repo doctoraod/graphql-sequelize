@@ -229,7 +229,7 @@ query {
 ```
 Code
 ```
-resolverQuery(sequelize, 'SELECT id, name, tasks FROM user', {});
+resolverQuery(sequelize, 'SELECT id, name, tasks FROM user', {}, sequelize.models.User);
 ```
 Output
 ```
@@ -255,7 +255,7 @@ query {
 resolverQuery(sequelize, 'SELECT id, name, tasks FROM user WHERE id = :id', (source, args, context, info) => {
   source.replacements = { id: info.source.userId }
   return source;
-});
+}, sequelize.models.User);
 ```
 ## field helpers
 
