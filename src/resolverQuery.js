@@ -57,7 +57,7 @@ function resolverFactory(model, sql, options, mappingModel) {
     findOptions.attributes = args;
     findOptions.logging = findOptions.logging || context.logging;
     findOptions.sql = sql || '';
-    findOptions.where = Object.assign(findOptions.where, args.where || {});
+    findOptions.where = Object.assign(findOptions.where || {}, args.where || {});
     var getType = {};
     if (options && getType.toString.call(options) === '[object Function]') {
         // before is function
