@@ -22,6 +22,14 @@ function resolverFactory(model, sql, options, mappingModel) {
         mainQueryItems.push(' ORDER BY ' + orders.mainQueryOrder.join(', '));
       }
     }
+    if (!findOptions.limit) {
+      findOptions.limit = 2000;
+    }
+    if (findOptions.limit > 2000) {
+      // fixbug query slow
+      throw new Error(`limit more than 2000,If you want 4000 row. Recommend request 2 times,
+      Example (limit: 2000,offset: 0) and (limit: 2000, offset: 1)`);
+    }
     const limitOrder = queryGenerator.addLimitAndOffset(findOptions);
     if (limitOrder) {
       mainQueryItems.push(limitOrder);

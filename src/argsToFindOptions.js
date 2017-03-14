@@ -34,6 +34,9 @@ export default function argsToFindOptions(args, targetAttributes) {
       }
     });
   }
+  if (!result.limit) {
+    result.limit = 2000;
+  }
   if (result.limit > 2000) {
     // fixbug query slow
     throw new Error(`limit more than 2000,If you want 4000 row. Recommend request 2 times,
